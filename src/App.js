@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 const App = () => {
-  /* ユーザーのパブリックウォレットを保存するために使用する状態変数を定義します */
+  // ユーザーのパブリックウォレットを保存するために使用する状態変数を定義します。
   const [currentAccount, setCurrentAccount] = useState("");
   console.log("currentAccount: ", currentAccount);
-  /* window.ethereumにアクセスできることを確認します */
+  // window.ethereumにアクセスできることを確認します。
   const checkIfWalletIsConnected = async () => {
     try {
       const { ethereum } = window;
@@ -14,25 +14,39 @@ const App = () => {
       } else {
         console.log("We have the ethereum object", ethereum);
       }
-      /* ユーザーのウォレットへのアクセスが許可されているかどうかを確認します */
-      // accountsにWEBサイトを訪れたユーザーのウォレットアカウントを格納する（複数持っている場合も加味、よって account's' と変数を定義している）
+      // ユーザーのウォレットへのアクセスが許可されているかどうかを確認します。
       const accounts = await ethereum.request({ method: "eth_accounts" });
-      // もしアカウントが一つでも存在したら、以下を実行。
       if (accounts.length !== 0) {
-        // accountという変数にユーザーの1つ目（=Javascriptでいう0番目）のアドレスを格納
         const account = accounts[0];
         console.log("Found an authorized account:", account);
-        // currentAccountにユーザーのアカウントアドレスを格納
         setCurrentAccount(account);
       } else {
-        // アカウントが存在しない場合は、エラーを出力。
         console.log("No authorized account found");
       }
     } catch (error) {
       console.log(error);
     }
   };
-  /* WEBページがロードされたときに下記の関数を実行します */
+  // connectWalletメソッドを実装
+  const connectWallet = async () => {
+    try {
+      // ユーザーが認証可能なウォレットアドレスを持っているか確認
+      const { ethereum } = window;
+      if (!ethereum) {
+        alert("Get MetaMask!");
+        return;
+      }
+      // 持っている場合は、ユーザーに対してウォレットへのアクセス許可を求める。許可されれば、ユーザーの最初のウォレットアドレスを currentAccount に格納する。
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      console.log("Connected: ", accounts[0]);
+      setCurrentAccount(accounts[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // WEBページがロードされたときに下記の関数を実行します。
   useEffect(() => {
     checkIfWalletIsConnected();
   }, []);
@@ -58,6 +72,17 @@ const App = () => {
         <button className="waveButton" onClick={null}>
           Wave at Me
         </button>
+        {/* ウォレットコネクトのボタンを実装 */}
+        {!currentAccount && (
+          <button className="waveButton" onClick={connectWallet}>
+            Connect Wallet
+          </button>
+        )}
+        {currentAccount && (
+          <button className="waveButton" onClick={connectWallet}>
+            Wallet Connected
+          </button>
+        )}
       </div>
     </div>
   );
