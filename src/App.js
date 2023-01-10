@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
+/* ethers 変数を使えるようにする*/
+import { ethers } from "ethers";
 const App = () => {
   // ユーザーのパブリックウォレットを保存するために使用する状態変数を定義します。
   const [currentAccount, setCurrentAccount] = useState("");
@@ -46,6 +48,28 @@ const App = () => {
       console.log(error);
     }
   };
+  // waveの回数をカウントする関数
+  const wave = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const wavePortalContract = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+        let count = await wavePortalContract.getTotalWaves();
+        console.log("Retrieved total wave count...", count.toNumber());
+        console.log("Signer:", signer);
+      } else {
+        console.log("Ethereum object doesn't exist!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   // WEBページがロードされたときに下記の関数を実行します。
   useEffect(() => {
     checkIfWalletIsConnected();
@@ -69,7 +93,8 @@ const App = () => {
             ✨
           </span>
         </div>
-        <button className="waveButton" onClick={null}>
+        {/* waveボタンにwave関数を連動させる。*/}
+        <button className="waveButton" onClick={wave}>
           Wave at Me
         </button>
         {/* ウォレットコネクトのボタンを実装 */}
