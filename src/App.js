@@ -5,6 +5,10 @@ import { ethers } from "ethers";
 const App = () => {
   // ユーザーのパブリックウォレットを保存するために使用する状態変数を定義します。
   const [currentAccount, setCurrentAccount] = useState("");
+/*
+ * デプロイされたコントラクトのアドレスを保持する変数を作成
+ */
+const contractAddress = "0x1fE64cA6a3Ad71265b35A8e6c104b25690C2EA93";
   console.log("currentAccount: ", currentAccount);
   // window.ethereumにアクセスできることを確認します。
   const checkIfWalletIsConnected = async () => {
